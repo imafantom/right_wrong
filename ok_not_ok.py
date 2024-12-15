@@ -1,4 +1,5 @@
 import streamlit as st
+import random
 
 # Data: Sentences, Correctness, and Explanations
 sentences_data = [
@@ -44,9 +45,22 @@ sentences_data = [
      "explanation": "Use 'sent' instead of 'send' as the past participle."}
 ]
 
-# Streamlit Application
-st.title("Grammar Correction Practice")
-st.write("Choose whether each sentence is 'Right' or 'Wrong'. After making a choice, you'll see an explanation!")
+# Motivational messages for correct answers
+motivational_messages = [
+    "Your teacher is impressed!", "You are a grammar ninja!", "You are the best in the world!",
+    "You've just made your teacher so proud!", "You're a real hero!", "Outstanding work!",
+    "You're unstoppable!", "You're the master of grammar!", "Fantastic effort!",
+    "You're acing this!", "You are shining bright!", "Incredible!", "You're on fire!",
+    "You're a grammar superstar!", "You're making history!", "Exceptional work!",
+    "Grammar genius at work!", "You're a true champion!", "You nailed it!", "Bravo!"
+]
+
+# Encouraging messages for incorrect answers
+encouraging_messages = [
+    "You can do better.", "You've just made your teacher cry.",
+    "If you had been right, you would have made a million dollars!",
+    "Don't give up; try again!", "Mistakes help you grow!", "Keep practicing, and you'll get it!"
+]
 
 # Smiley emoji
 smiley_face = "😄"
@@ -67,10 +81,10 @@ for i, data in enumerate(sentences_data):
     # Show explanation and smiley based on user choice
     if st.button(f"Submit Answer for Sentence {i+1}", key=f"button_{i}"):
         if user_choice == data["correct"]:
-            st.success(f"Correct! {smiley_face}")
+            st.success(f"Correct! {smiley_face} {random.choice(motivational_messages)}")
             correct_answers += 1
         else:
-            st.error("Incorrect.")
+            st.error(f"Incorrect. {random.choice(encouraging_messages)}")
         st.info(f"Explanation: {data['explanation']}")
 
 # Completion Message
