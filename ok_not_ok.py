@@ -22,27 +22,7 @@ sentences_data = [
     {"sentence": "She has just arrived at the station.", "correct": "Right",
      "explanation": "This is correct. 'Has just arrived' is the appropriate present perfect structure."},
     {"sentence": "The book was reading by a student during the lesson.", "correct": "Wrong",
-     "explanation": "Correct form is 'was being read' for the past continuous passive."},
-    {"sentence": "Have you finished your homework yet?", "correct": "Right",
-     "explanation": "This is correct. 'Finished' is the proper past participle for present perfect."},
-    {"sentence": "They didn’t used to like vegetables.", "correct": "Wrong",
-     "explanation": "After 'didn't,' use 'use to' without 'd.'"},
-    {"sentence": "If I had knew about the problem, I would have solved it.", "correct": "Wrong",
-     "explanation": "Use 'had known' instead of 'had knew.'"},
-    {"sentence": "The documents have been sent to the client.", "correct": "Right",
-     "explanation": "This is correct. 'Have been sent' is the correct passive voice form in present perfect."},
-    {"sentence": "You can’t have saw her; she is abroad.", "correct": "Wrong",
-     "explanation": "Use 'seen' instead of 'saw' as the past participle."},
-    {"sentence": "She never used to drink coffee.", "correct": "Right",
-     "explanation": "This is correct. 'Used to' is the proper form for past habits."},
-    {"sentence": "He will finish the project tomorrow.", "correct": "Right",
-     "explanation": "This is correct. It uses proper future tense."},
-    {"sentence": "She said she had completed the project before the deadline.", "correct": "Right",
-     "explanation": "This is correct. 'Had completed' is appropriate for reported speech."},
-    {"sentence": "You should had called her before the meeting.", "correct": "Wrong",
-     "explanation": "Replace 'had' with 'have' to form 'should have called.'"},
-    {"sentence": "If she would have known, she would have helped.", "correct": "Wrong",
-     "explanation": "Use 'had known' in the third conditional."}
+     "explanation": "Correct form is 'was being read' for the past continuous passive."}
 ]
 
 # Motivational messages for correct answers
@@ -62,6 +42,11 @@ encouraging_messages = [
     "Don't give up; try again!", "Mistakes help you grow!", "Keep practicing, and you'll get it!"
 ]
 
+# Smiley emoji
+smiley_face = "😄"
+# Typing cat GIF URL
+typing_cat_gif = "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif"
+
 # Initialize session state
 if "student_name" not in st.session_state:
     st.session_state.student_name = ""
@@ -71,15 +56,13 @@ if "answers" not in st.session_state:
     st.session_state.answers = []
 if "points" not in st.session_state:
     st.session_state.points = 0
-if "submitted" not in st.session_state:
-    st.session_state.submitted = False
 
 # Step 1: Name Input
 if st.session_state.student_name == "":
     st.title("Welcome to the Grammar Practice Exercise!")
     st.session_state.student_name = st.text_input("Enter your name to start:", "").strip()
     if st.session_state.student_name and st.button("Start"):
-        st.session_state.submitted = False
+        st.experimental_rerun()
 
 # Step 2: Grammar Exercise
 elif st.session_state.current_question < len(sentences_data):
@@ -93,8 +76,7 @@ elif st.session_state.current_question < len(sentences_data):
     )
     user_choice = st.radio("Is this sentence correct?", ["Right", "Wrong"], key=f"choice_{st.session_state.current_question}")
 
-    if st.button("Submit", key=f"submit_{st.session_state.current_question}"):
-        st.session_state.submitted = True
+    if st.button("Submit"):
         correct = user_choice == question["correct"]
         st.session_state.answers.append({
             "sentence": question["sentence"],
@@ -110,9 +92,9 @@ elif st.session_state.current_question < len(sentences_data):
             st.error(f"Incorrect. {random.choice(encouraging_messages)}")
         st.info(f"Explanation: {question['explanation']}")
 
-        # Advance to next question
+        # Move to the next question
         st.session_state.current_question += 1
-        st.session_state.submitted = False
+        st.experimental_rerun()
 
 # Step 3: Summary
 else:
