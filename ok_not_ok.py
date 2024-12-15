@@ -74,23 +74,26 @@ points = 0
 # Loop through all 20 sentences
 for i, data in enumerate(sentences_data):
     st.subheader(f"Sentence {i+1}:")
-    st.markdown(f"<span style='color:blue'>{data['sentence']}</span>", unsafe_allow_html=True)
+    if f"answered_{i}" not in st.session_state:
+        st.markdown(
+            f"<span style='font-size: 18px; font-weight: bold;'>{data['sentence']}</span>",
+            unsafe_allow_html=True,
+        )
+        user_choice = st.radio("", ["Right", "Wrong"], key=f"choice_{i}")
 
-    # User choice: Right or Wrong
-    user_choice = st.radio(f"Do you think this sentence is correct?", ["Right", "Wrong"], key=f"choice_{i}")
-
-    # Show explanation and smiley based on user choice
-    if st.button(f"Submit Answer for Sentence {i+1}", key=f"button_{i}"):
-        if user_choice == data["correct"]:
-            st.success(f"Correct! {smiley_face} {random.choice(motivational_messages)}")
-            correct_answers += 1
-            points += 1
-        else:
-            st.error(f"Incorrect. {random.choice(encouraging_messages)}")
-        st.info(f"Explanation: {data['explanation']}")
+        if st.button(f"Submit Answer for Sentence {i+1}", key=f"button_{i}"):
+            st.session_state[f"answered_{i}"] = True
+            if user_choice == data["correct"]:
+                st.success(f"Correct! {smiley_face} {random.choice(motivational_messages)}")
+                correct_answers += 1
+                points += 1
+            else:
+                st.error(f"Incorrect. {random.choice(encouraging_messages)}")
+            st.info(f"Explanation: {data['explanation']}")
+            st.experimental_rerun()
 
 # Completion Message
-if correct_answers == len(sentences_data):
+if len([key for key in st.session_state if key.startswith("answered_")]) == len(sentences_data):
     st.balloons()  # Streamlit balloons for celebration
     st.markdown("### 🎉 Well done! You've completed the practice! 🎉")
     st.image(typing_cat_gif, width=300)
