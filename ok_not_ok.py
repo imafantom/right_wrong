@@ -82,7 +82,6 @@ if not st.session_state.started_exercise:
     st.session_state.student_name = st.text_input("Enter your name to start:", "").strip()
     if st.session_state.student_name and st.button("Continue"):
         st.session_state.started_exercise = True
-        st.experimental_rerun()
 else:
     # Step 2: Grammar Exercise
     st.title(f"Good luck, {st.session_state.student_name}!")
