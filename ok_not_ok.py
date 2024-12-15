@@ -22,27 +22,7 @@ sentences_data = [
     {"sentence": "She has just arrived at the station.", "correct": "Right",
      "explanation": "This is correct. 'Has just arrived' is the appropriate present perfect structure."},
     {"sentence": "The book was reading by a student during the lesson.", "correct": "Wrong",
-     "explanation": "Correct form is 'was being read' for the past continuous passive."},
-    {"sentence": "We could finish the project if we had started earlier.", "correct": "Wrong",
-     "explanation": "Use 'could have finished' for the third conditional."},
-    {"sentence": "I should had called her before the meeting.", "correct": "Wrong",
-     "explanation": "Replace 'had' with 'have' to form 'should have called.'"},
-    {"sentence": "She never used to drink coffee.", "correct": "Right",
-     "explanation": "This is correct. 'Used to' is the proper form for past habits."},
-    {"sentence": "The documents have been sent to the client.", "correct": "Right",
-     "explanation": "This is correct. 'Have been sent' is the correct passive voice form in present perfect."},
-    {"sentence": "If I had knew about the problem, I would have solved it.", "correct": "Wrong",
-     "explanation": "Use 'had known' instead of 'had knew.'"},
-    {"sentence": "She said she had completed the project before the deadline.", "correct": "Right",
-     "explanation": "This is correct. 'Had completed' is appropriate for reported speech."},
-    {"sentence": "You can’t have saw her; she is abroad.", "correct": "Wrong",
-     "explanation": "Use 'seen' instead of 'saw' as the past participle."},
-    {"sentence": "He will finish the project tomorrow.", "correct": "Right",
-     "explanation": "This is correct. It uses proper future tense."},
-    {"sentence": "They didn’t used to like vegetables.", "correct": "Wrong",
-     "explanation": "After 'didn't,' use 'use to' without 'd.'"},
-    {"sentence": "Have the documents been send to the client?", "correct": "Wrong",
-     "explanation": "Use 'sent' instead of 'send' as the past participle."}
+     "explanation": "Correct form is 'was being read' for the past continuous passive."}
 ]
 
 # Motivational messages for correct answers
@@ -67,36 +47,38 @@ smiley_face = "😄"
 # Typing cat GIF URL
 typing_cat_gif = "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif"
 
-# Counter for correct answers and points
-correct_answers = 0
-points = 0
+# Initialize session state for points and answered questions
+if "answered_questions" not in st.session_state:
+    st.session_state.answered_questions = [False] * len(sentences_data)
+    st.session_state.points = 0
 
-# Loop through all 20 sentences
+# Loop through all sentences
 for i, data in enumerate(sentences_data):
-    st.subheader(f"Sentence {i+1}:")
-    if f"answered_{i}" not in st.session_state:
-        st.markdown(
-            f"<span style='font-size: 18px; font-weight: bold;'>{data['sentence']}</span>",
-            unsafe_allow_html=True,
-        )
-        user_choice = st.radio("", ["Right", "Wrong"], key=f"choice_{i}")
+    if st.session_state.answered_questions[i]:
+        continue
 
-        if st.button(f"Submit Answer for Sentence {i+1}", key=f"button_{i}"):
-            st.session_state[f"answered_{i}"] = True
-            if user_choice == data["correct"]:
-                st.success(f"Correct! {smiley_face} {random.choice(motivational_messages)}")
-                correct_answers += 1
-                points += 1
-            else:
-                st.error(f"Incorrect. {random.choice(encouraging_messages)}")
-            st.info(f"Explanation: {data['explanation']}")
-            st.experimental_rerun()
+    st.subheader(f"Sentence {i+1}:")
+    st.markdown(
+        f"<span style='font-size: 18px; font-weight: bold;'>{data['sentence']}</span>",
+        unsafe_allow_html=True,
+    )
+    user_choice = st.radio("", ["Right", "Wrong"], key=f"choice_{i}")
+
+    if st.button(f"Submit Answer for Sentence {i+1}", key=f"button_{i}"):
+        st.session_state.answered_questions[i] = True
+        if user_choice == data["correct"]:
+            st.success(f"Correct! {smiley_face} {random.choice(motivational_messages)}")
+            st.session_state.points += 1
+        else:
+            st.error(f"Incorrect. {random.choice(encouraging_messages)}")
+        st.info(f"Explanation: {data['explanation']}")
 
 # Completion Message
-if len([key for key in st.session_state if key.startswith("answered_")]) == len(sentences_data):
-    st.balloons()  # Streamlit balloons for celebration
+if all(st.session_state.answered_questions):
+    st.balloons()
     st.markdown("### 🎉 Well done! You've completed the practice! 🎉")
     st.image(typing_cat_gif, width=300)
 
 # Final Points Display
-st.markdown(f"### Your total points: {points}")
+st.markdown(f"### Your total points: {st.session_state.points}")
+
