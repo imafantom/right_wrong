@@ -68,6 +68,8 @@ smiley_face = "😄"
 typing_cat_gif = "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif"
 
 # Initialize session state
+if "student_name" not in st.session_state:
+    st.session_state.student_name = ""
 if "current_question" not in st.session_state:
     st.session_state.current_question = 0
 if "answers" not in st.session_state:
@@ -75,21 +77,26 @@ if "answers" not in st.session_state:
 if "points" not in st.session_state:
     st.session_state.points = 0
 
-# Check if we've reached the end
-if st.session_state.current_question < len(sentences_data):
+# Step 1: Name Input
+if st.session_state.student_name == "":
+    st.title("Welcome to the Grammar Practice Exercise!")
+    st.session_state.student_name = st.text_input("Enter your name to start:", "").strip()
+    if st.session_state.student_name and st.button("Start"):
+        st.experimental_rerun()
+
+# Step 2: Grammar Exercise
+elif st.session_state.current_question < len(sentences_data):
     question = sentences_data[st.session_state.current_question]
 
-    # Display the current question
+    st.title(f"Good luck, {st.session_state.student_name}!")
     st.subheader(f"Sentence {st.session_state.current_question + 1}:")
     st.markdown(
         f"<span style='font-size: 18px; font-weight: bold;'>{question['sentence']}</span>",
         unsafe_allow_html=True,
     )
     user_choice = st.radio("Is this sentence correct?", ["Right", "Wrong"], key=f"choice_{st.session_state.current_question}")
-    
-    # Submit Button
+
     if st.button("Submit"):
-        # Store answer and increment question counter
         correct = user_choice == question["correct"]
         st.session_state.answers.append({
             "sentence": question["sentence"],
@@ -104,11 +111,15 @@ if st.session_state.current_question < len(sentences_data):
         else:
             st.error(f"Incorrect. {random.choice(encouraging_messages)}")
         st.info(f"Explanation: {question['explanation']}")
+
+        # Move to next question automatically
         st.session_state.current_question += 1
+        st.experimental_rerun()
+
+# Step 3: Summary
 else:
-    # Completion message
     st.balloons()
-    st.markdown(f"### 🎉 Well done! You've completed the exercise! 🎉")
+    st.markdown(f"### 🎉 {st.session_state.student_name}, you are a legend! You've made your teacher proud! 🎉")
     st.markdown(f"### Your total points: {st.session_state.points}")
 
     # Show all answers
