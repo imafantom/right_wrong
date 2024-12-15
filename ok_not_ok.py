@@ -67,13 +67,14 @@ smiley_face = "😄"
 # Typing cat GIF URL
 typing_cat_gif = "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif"
 
-# Counter for correct answers
+# Counter for correct answers and points
 correct_answers = 0
+points = 0
 
 # Loop through all 20 sentences
 for i, data in enumerate(sentences_data):
     st.subheader(f"Sentence {i+1}:")
-    st.write(data["sentence"])
+    st.markdown(f"<span style='color:blue'>{data['sentence']}</span>", unsafe_allow_html=True)
 
     # User choice: Right or Wrong
     user_choice = st.radio(f"Do you think this sentence is correct?", ["Right", "Wrong"], key=f"choice_{i}")
@@ -83,6 +84,7 @@ for i, data in enumerate(sentences_data):
         if user_choice == data["correct"]:
             st.success(f"Correct! {smiley_face} {random.choice(motivational_messages)}")
             correct_answers += 1
+            points += 1
         else:
             st.error(f"Incorrect. {random.choice(encouraging_messages)}")
         st.info(f"Explanation: {data['explanation']}")
@@ -92,3 +94,6 @@ if correct_answers == len(sentences_data):
     st.balloons()  # Streamlit balloons for celebration
     st.markdown("### 🎉 Well done! You've completed the practice! 🎉")
     st.image(typing_cat_gif, width=300)
+
+# Final Points Display
+st.markdown(f"### Your total points: {points}")
