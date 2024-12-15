@@ -22,7 +22,27 @@ sentences_data = [
     {"sentence": "She has just arrived at the station.", "correct": "Right",
      "explanation": "This is correct. 'Has just arrived' is the appropriate present perfect structure."},
     {"sentence": "The book was reading by a student during the lesson.", "correct": "Wrong",
-     "explanation": "Correct form is 'was being read' for the past continuous passive."}
+     "explanation": "Correct form is 'was being read' for the past continuous passive."},
+    {"sentence": "Have you finished your homework yet?", "correct": "Right",
+     "explanation": "This is correct. 'Finished' is the proper past participle for present perfect."},
+    {"sentence": "They didn’t used to like vegetables.", "correct": "Wrong",
+     "explanation": "After 'didn't,' use 'use to' without 'd.'"},
+    {"sentence": "If I had knew about the problem, I would have solved it.", "correct": "Wrong",
+     "explanation": "Use 'had known' instead of 'had knew.'"},
+    {"sentence": "The documents have been sent to the client.", "correct": "Right",
+     "explanation": "This is correct. 'Have been sent' is the correct passive voice form in present perfect."},
+    {"sentence": "You can’t have saw her; she is abroad.", "correct": "Wrong",
+     "explanation": "Use 'seen' instead of 'saw' as the past participle."},
+    {"sentence": "She never used to drink coffee.", "correct": "Right",
+     "explanation": "This is correct. 'Used to' is the proper form for past habits."},
+    {"sentence": "He will finish the project tomorrow.", "correct": "Right",
+     "explanation": "This is correct. It uses proper future tense."},
+    {"sentence": "She said she had completed the project before the deadline.", "correct": "Right",
+     "explanation": "This is correct. 'Had completed' is appropriate for reported speech."},
+    {"sentence": "You should had called her before the meeting.", "correct": "Wrong",
+     "explanation": "Replace 'had' with 'have' to form 'should have called.'"},
+    {"sentence": "If she would have known, she would have helped.", "correct": "Wrong",
+     "explanation": "Use 'had known' in the third conditional."}
 ]
 
 # Motivational messages for correct answers
@@ -53,13 +73,16 @@ if "answered_questions" not in st.session_state:
     st.session_state.points = 0
 if "student_name" not in st.session_state:
     st.session_state.student_name = ""
+if "started_exercise" not in st.session_state:
+    st.session_state.started_exercise = False
 
-# Step 1: Name Input
-if not st.session_state.student_name:
+# Step 1: Name Input and Continue Button
+if not st.session_state.started_exercise:
     st.title("Welcome to the Grammar Practice Exercise!")
     st.session_state.student_name = st.text_input("Enter your name to start:", "").strip()
-    if st.session_state.student_name:
-        st.write(f"Thank you, {st.session_state.student_name}! Let's begin!")
+    if st.session_state.student_name and st.button("Continue"):
+        st.session_state.started_exercise = True
+        st.experimental_rerun()
 else:
     # Step 2: Grammar Exercise
     st.title(f"Good luck, {st.session_state.student_name}!")
