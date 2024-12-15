@@ -56,13 +56,15 @@ if "answers" not in st.session_state:
     st.session_state.answers = []
 if "points" not in st.session_state:
     st.session_state.points = 0
+if "submitted" not in st.session_state:
+    st.session_state.submitted = False
 
 # Step 1: Name Input
 if st.session_state.student_name == "":
     st.title("Welcome to the Grammar Practice Exercise!")
     st.session_state.student_name = st.text_input("Enter your name to start:", "").strip()
     if st.session_state.student_name and st.button("Start"):
-        st.experimental_rerun()
+        st.session_state.submitted = False
 
 # Step 2: Grammar Exercise
 elif st.session_state.current_question < len(sentences_data):
@@ -76,7 +78,7 @@ elif st.session_state.current_question < len(sentences_data):
     )
     user_choice = st.radio("Is this sentence correct?", ["Right", "Wrong"], key=f"choice_{st.session_state.current_question}")
 
-    if st.button("Submit"):
+    if st.button("Submit", key=f"submit_{st.session_state.current_question}"):
         correct = user_choice == question["correct"]
         st.session_state.answers.append({
             "sentence": question["sentence"],
@@ -92,9 +94,9 @@ elif st.session_state.current_question < len(sentences_data):
             st.error(f"Incorrect. {random.choice(encouraging_messages)}")
         st.info(f"Explanation: {question['explanation']}")
 
-        # Move to the next question
+        # Advance to the next question
         st.session_state.current_question += 1
-        st.experimental_rerun()
+        st.session_state.submitted = False
 
 # Step 3: Summary
 else:
