@@ -52,6 +52,16 @@ if "answered_questions" not in st.session_state:
     st.session_state.answered_questions = [False] * len(sentences_data)
     st.session_state.points = 0
 
+# Name input
+if "student_name" not in st.session_state:
+    st.session_state.student_name = ""
+
+st.title("Grammar Practice Exercise")
+if st.session_state.student_name == "":
+    st.session_state.student_name = st.text_input("Enter your name to start:", "").strip()
+    if st.session_state.student_name:
+        st.experimental_rerun()
+
 # Loop through all sentences
 for i, data in enumerate(sentences_data):
     if st.session_state.answered_questions[i]:
@@ -76,9 +86,8 @@ for i, data in enumerate(sentences_data):
 # Completion Message
 if all(st.session_state.answered_questions):
     st.balloons()
-    st.markdown("### 🎉 Well done! You've completed the practice! 🎉")
+    st.markdown(f"### 🎉 {st.session_state.student_name}, you are a legend! You've made your teacher proud! 🎉")
     st.image(typing_cat_gif, width=300)
 
 # Final Points Display
 st.markdown(f"### Your total points: {st.session_state.points}")
-
