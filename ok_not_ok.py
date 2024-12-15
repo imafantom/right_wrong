@@ -47,47 +47,51 @@ smiley_face = "😄"
 # Typing cat GIF URL
 typing_cat_gif = "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif"
 
-# Initialize session state for points and answered questions
+# Initialize session state for points, answered questions, and student name
 if "answered_questions" not in st.session_state:
     st.session_state.answered_questions = [False] * len(sentences_data)
     st.session_state.points = 0
-
-# Name input
 if "student_name" not in st.session_state:
     st.session_state.student_name = ""
 
-st.title("Grammar Practice Exercise")
-if st.session_state.student_name == "":
+# Step 1: Name Input
+if not st.session_state.student_name:
+    st.title("Welcome to the Grammar Practice Exercise!")
     st.session_state.student_name = st.text_input("Enter your name to start:", "").strip()
     if st.session_state.student_name:
-        st.experimental_rerun()
+        st.write(f"Thank you, {st.session_state.student_name}! Let's begin!")
+else:
+    # Step 2: Grammar Exercise
+    st.title(f"Good luck, {st.session_state.student_name}!")
+    
+    # Loop through all sentences
+    for i, data in enumerate(sentences_data):
+        if st.session_state.answered_questions[i]:
+            continue
 
-# Loop through all sentences
-for i, data in enumerate(sentences_data):
-    if st.session_state.answered_questions[i]:
-        continue
+        st.subheader(f"Sentence {i+1}:")
+        st.markdown(
+            f"<span style='font-size: 18px; font-weight: bold;'>{data['sentence']}</span>",
+            unsafe_allow_html=True,
+        )
+        user_choice = st.radio("", ["Right", "Wrong"], key=f"choice_{i}")
 
-    st.subheader(f"Sentence {i+1}:")
-    st.markdown(
-        f"<span style='font-size: 18px; font-weight: bold;'>{data['sentence']}</span>",
-        unsafe_allow_html=True,
-    )
-    user_choice = st.radio("", ["Right", "Wrong"], key=f"choice_{i}")
+        if st.button(f"Submit Answer for Sentence {i+1}", key=f"button_{i}"):
+            st.session_state.answered_questions[i] = True
+            if user_choice == data["correct"]:
+                st.success(f"Correct! {smiley_face} {random.choice(motivational_messages)}")
+                st.session_state.points += 1
+            else:
+                st.error(f"Incorrect. {random.choice(encouraging_messages)}")
+            st.info(f"Explanation: {data['explanation']}")
 
-    if st.button(f"Submit Answer for Sentence {i+1}", key=f"button_{i}"):
-        st.session_state.answered_questions[i] = True
-        if user_choice == data["correct"]:
-            st.success(f"Correct! {smiley_face} {random.choice(motivational_messages)}")
-            st.session_state.points += 1
-        else:
-            st.error(f"Incorrect. {random.choice(encouraging_messages)}")
-        st.info(f"Explanation: {data['explanation']}")
+    # Completion Message
+    if all(st.session_state.answered_questions):
+        st.balloons()
+        st.markdown(
+            f"### 🎉 {st.session_state.student_name}, you are a legend! You've made your teacher proud! 🎉"
+        )
+        st.image(typing_cat_gif, width=300)
 
-# Completion Message
-if all(st.session_state.answered_questions):
-    st.balloons()
-    st.markdown(f"### 🎉 {st.session_state.student_name}, you are a legend! You've made your teacher proud! 🎉")
-    st.image(typing_cat_gif, width=300)
-
-# Final Points Display
-st.markdown(f"### Your total points: {st.session_state.points}")
+    # Final Points Display
+    st.markdown(f"### Your total points: {st.session_state.points}")
