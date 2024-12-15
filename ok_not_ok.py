@@ -67,53 +67,55 @@ smiley_face = "😄"
 # Typing cat GIF URL
 typing_cat_gif = "https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif"
 
-# Initialize session state for points, answered questions, and student name
-if "answered_questions" not in st.session_state:
-    st.session_state.answered_questions = [False] * len(sentences_data)
+# Initialize session state
+if "current_question" not in st.session_state:
+    st.session_state.current_question = 0
+if "answers" not in st.session_state:
+    st.session_state.answers = []
+if "points" not in st.session_state:
     st.session_state.points = 0
-if "student_name" not in st.session_state:
-    st.session_state.student_name = ""
-if "started_exercise" not in st.session_state:
-    st.session_state.started_exercise = False
 
-# Step 1: Name Input and Continue Button
-if not st.session_state.started_exercise:
-    st.title("Welcome to the Grammar Practice Exercise!")
-    st.session_state.student_name = st.text_input("Enter your name to start:", "").strip()
-    if st.session_state.student_name and st.button("Continue"):
-        st.session_state.started_exercise = True
-else:
-    # Step 2: Grammar Exercise
-    st.title(f"Good luck, {st.session_state.student_name}!")
+# Check if we've reached the end
+if st.session_state.current_question < len(sentences_data):
+    question = sentences_data[st.session_state.current_question]
+
+    # Display the current question
+    st.subheader(f"Sentence {st.session_state.current_question + 1}:")
+    st.markdown(
+        f"<span style='font-size: 18px; font-weight: bold;'>{question['sentence']}</span>",
+        unsafe_allow_html=True,
+    )
+    user_choice = st.radio("Is this sentence correct?", ["Right", "Wrong"], key=f"choice_{st.session_state.current_question}")
     
-    # Loop through all sentences
-    for i, data in enumerate(sentences_data):
-        if st.session_state.answered_questions[i]:
-            continue
-
-        st.subheader(f"Sentence {i+1}:")
-        st.markdown(
-            f"<span style='font-size: 18px; font-weight: bold;'>{data['sentence']}</span>",
-            unsafe_allow_html=True,
-        )
-        user_choice = st.radio("", ["Right", "Wrong"], key=f"choice_{i}")
-
-        if st.button(f"Submit Answer for Sentence {i+1}", key=f"button_{i}"):
-            st.session_state.answered_questions[i] = True
-            if user_choice == data["correct"]:
-                st.success(f"Correct! {smiley_face} {random.choice(motivational_messages)}")
-                st.session_state.points += 1
-            else:
-                st.error(f"Incorrect. {random.choice(encouraging_messages)}")
-            st.info(f"Explanation: {data['explanation']}")
-
-    # Completion Message
-    if all(st.session_state.answered_questions):
-        st.balloons()
-        st.markdown(
-            f"### 🎉 {st.session_state.student_name}, you are a legend! You've made your teacher proud! 🎉"
-        )
-        st.image(typing_cat_gif, width=300)
-
-    # Final Points Display
+    # Submit Button
+    if st.button("Submit"):
+        # Store answer and increment question counter
+        correct = user_choice == question["correct"]
+        st.session_state.answers.append({
+            "sentence": question["sentence"],
+            "user_choice": user_choice,
+            "correct": question["correct"],
+            "is_correct": correct,
+            "explanation": question["explanation"]
+        })
+        if correct:
+            st.session_state.points += 1
+            st.success(f"Correct! {smiley_face} {random.choice(motivational_messages)}")
+        else:
+            st.error(f"Incorrect. {random.choice(encouraging_messages)}")
+        st.info(f"Explanation: {question['explanation']}")
+        st.session_state.current_question += 1
+else:
+    # Completion message
+    st.balloons()
+    st.markdown(f"### 🎉 Well done! You've completed the exercise! 🎉")
     st.markdown(f"### Your total points: {st.session_state.points}")
+
+    # Show all answers
+    st.write("### Summary of Your Answers")
+    for i, answer in enumerate(st.session_state.answers, start=1):
+        st.write(f"**Sentence {i}:** {answer['sentence']}")
+        st.write(f"- **Your Answer:** {answer['user_choice']}")
+        st.write(f"- **Correct Answer:** {answer['correct']}")
+        st.write(f"- **Explanation:** {answer['explanation']}")
+        st.write("---")
